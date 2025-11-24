@@ -12,9 +12,6 @@ pnpm-debug.log*
 out/
 dist/
 
-# Production
-build/
-
 # Environment
 .env
 .env.local
