@@ -29,6 +29,9 @@ jobs:
           pnpm install --frozen-lockfile
           pnpm build
 
+      - name: Debug list build files
+        run: ls -al . && ls -al .next
+
       - name: Upload build to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
