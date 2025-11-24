@@ -1,4 +1,4 @@
-name: Deploy to EC2
+name: Deploy NextJS to EC2
 
 on:
   push:
@@ -8,20 +8,36 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build frontend
+      - name: Install deps & build
         run: |
-          npm install
+          npm ci
           npm run build
 
-      - name: Copy build to EC2
+      - name: Upload build to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "dist/*"
-          target: "/var/www/html/"
+          source: |
+            .next
+            package.json
+            next.config.js
+            public
+          target: /var/www/nextapp/
+
+      - name: Restart app via SSH
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /var/www/nextapp
+            npm install --omit=dev
+            pm2 restart nextapp || pm2 start npm --name "nextapp" -- start
 
