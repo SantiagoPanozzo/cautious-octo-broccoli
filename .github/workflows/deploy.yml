@@ -1,4 +1,4 @@
-name: Deploy NextJS to EC2
+name: Deploy NextJS (pnpm) to EC2
 
 on:
   push:
@@ -12,10 +12,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Install pnpm
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      # Install Node (required for pnpm/action-setup)
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
       - name: Install deps & build
         run: |
-          npm ci
-          npm run build
+          pnpm install --frozen-lockfile
+          pnpm build
 
       - name: Upload build to EC2
         uses: appleboy/scp-action@v0.1.7
@@ -25,9 +36,10 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           source: |
             .next
-            package.json
-            next.config.js
             public
+            package.json
+            pnpm-lock.yaml
+            next.config.js
           target: /var/www/nextapp/
 
       - name: Restart app via SSH
@@ -38,6 +50,6 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd /var/www/nextapp
-            npm install --omit=dev
-            pm2 restart nextapp || pm2 start npm --name "nextapp" -- start
+            pnpm install --prod --frozen-lockfile
+            pm2 restart nextapp || pm2 start pnpm --name "nextapp" -- start
 
