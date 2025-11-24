@@ -38,12 +38,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: |
-            .next
-            public
-            package.json
-            pnpm-lock.yaml
-            next.config.js
+          source: ".next public package.json pnpm-lock.yaml next.config.mjs"
           target: /var/www/nextapp/
 
       - name: Restart app via SSH
