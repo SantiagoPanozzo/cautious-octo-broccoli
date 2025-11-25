@@ -35,9 +35,9 @@ jobs:
       - name: Upload build to EC2 WEB1
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ secrets.EC2_HOST }}
+          host: ${{ secrets.EC2_HOST_WEB1 }}
           username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY_WEB1 }}
+          key: ${{ secrets.EC2_SSH_KEY }}
           source: "."
           target: /var/www/nextapp/
 
