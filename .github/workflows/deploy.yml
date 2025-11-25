@@ -59,14 +59,40 @@ jobs:
           source: "."
           target: /var/www/nextapp/
 
-      - name: Restart app via SSH
+      - name: Restart app via SSH WEB1
         uses: appleboy/ssh-action@v0.1.8
         with:
-          host: ${{ secrets.EC2_HOST }}
+          host: ${{ secrets.EC2_HOST_WEB1 }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /var/www/nextapp
+            pnpm install --prod --frozen-lockfile
+            pnpm run build
+            pnpm run start &
+
+      - name: Restart app via SSH WEB2
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.EC2_HOST_WEB2 }}
+          username: admin
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /var/www/nextapp
+            pnpm install --prod --frozen-lockfile
+            pnpm run build
+            pnpm run start &
+
+
+      - name: Restart app via SSH WEB3
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.EC2_HOST_WEB3 }}
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd /var/www/nextapp
             pnpm install --prod --frozen-lockfile
-            pm2 restart nextapp || pm2 start pnpm --name "nextapp" -- start
+            pnpm run build
+            pnpm run start &
 
