@@ -32,10 +32,28 @@ jobs:
       - name: Debug list build files
         run: ls -al . && ls -al .next
 
-      - name: Upload build to EC2
+      - name: Upload build to EC2 WEB1
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY_WEB1 }}
+          source: "."
+          target: /var/www/nextapp/
+
+      - name: Upload build to EC2 WEB2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST_WEB2 }}
+          username: debian
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "."
+          target: /var/www/nextapp/
+
+      - name: Upload build to EC2 WEB3
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST_WEB3 }}
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "."
