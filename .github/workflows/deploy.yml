@@ -45,7 +45,7 @@ jobs:
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST_WEB2 }}
-          username: debian
+          username: admin
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "."
           target: /var/www/nextapp/
