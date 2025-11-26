@@ -67,9 +67,18 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd /var/www/nextapp
+            
+            # Kill old process if exists
+            if [ -f /var/www/nextapp/app.pid ]; then
+              kill $(cat /var/www/nextapp/app.pid) || true
+              rm /var/www/nextapp/app.pid
+            fi
+            
             pnpm install --prod --frozen-lockfile
             pnpm run build
-            pnpm run start &
+            nohup pnpm run start > /var/www/nextapp/app.log 2>&1 &
+            echo $! > /var/www/nextapp/app.pid
+            disown
 
       - name: Restart app via SSH WEB2
         uses: appleboy/ssh-action@v0.1.8
@@ -79,9 +88,18 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd /var/www/nextapp
+            
+            # Kill old process if exists
+            if [ -f /var/www/nextapp/app.pid ]; then
+              kill $(cat /var/www/nextapp/app.pid) || true
+              rm /var/www/nextapp/app.pid
+            fi
+            
             pnpm install --prod --frozen-lockfile
             pnpm run build
-            pnpm run start &
+            nohup pnpm run start > /var/www/nextapp/app.log 2>&1 &
+            echo $! > /var/www/nextapp/app.pid
+            disown
 
 
       - name: Restart app via SSH WEB3
@@ -92,7 +110,16 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd /var/www/nextapp
+            
+            # Kill old process if exists
+            if [ -f /var/www/nextapp/app.pid ]; then
+              kill $(cat /var/www/nextapp/app.pid) || true
+              rm /var/www/nextapp/app.pid
+            fi
+            
             pnpm install --prod --frozen-lockfile
             pnpm run build
-            pnpm run start &
+            nohup pnpm run start > /var/www/nextapp/app.log 2>&1 &
+            echo $! > /var/www/nextapp/app.pid
+            disown
 
